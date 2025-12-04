@@ -118,46 +118,76 @@ async def images(ctx, date_str: str):
     for _, m, att in image_messages[:3]:
         await ctx.send(f"{m.created_at.strftime('%Y-%m-%d %H:%M:%S')} → {att.url}")
 
-# Google Sheets認証設定
+# ---------- Google Sheets認証 ----------
 scope = ["https://spreadsheets.google.com/feeds",
          "https://www.googleapis.com/auth/drive"]
 creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
 client = gspread.authorize(creds)
-sheet = client.open("FF14_dutyList").sheet1
+sheet = client.open("FF14_dutyList")
 
-# スプレッドシートを開く
-sheet = client.open("FF14_dutyList").sheet1
-
-# ---------- FF14 ID検索コマンド ----------
+# ---------- ID検索 ----------
 @bot.command()
 async def IDS(ctx, *, keyword: str):
     try:
-        data = sheet.get_all_records()
-        results = [(row["ID名"], row["URL"]) for row in data if keyword in row["ID名"]]
+        id_sheet = sheet.worksheet("ID")
+        data = id_sheet.get_all_records()
+        results = [(row["名前"], row["URL"]) for row in data if keyword in row["名前"]]
 
         if not results:
             await ctx.send("該当するIDが見つかりませんでした。")
             return
 
-        # 検索結果をまとめて一覧表示
-        if len(results) > 1:
-            desc = "\n".join([f"[{name}]({url})" for name, url in results])
-            embed = disnake.Embed(
-                title=f"🔎 検索結果一覧（キーワード: {keyword}）",
-                description=desc,
-                color=disnake.Color.blue()
-            )
-            await ctx.send(embed=embed)
-        else:
-            name, url = results[0]
-            embed = disnake.Embed(
-                title=name,
-                url=url,
-                description="FF14 ID情報",
-                color=disnake.Color.blue()
-            )
-            await ctx.send(embed=embed)
+        desc = "\n".join([f"[{name}]({url})" for name, url in results])
+        embed = disnake.Embed(
+            title=f"🔎 ID検索結果（キーワード: {keyword}）",
+            description=desc,
+            color=disnake.Color.blue()
+        )
+        await ctx.send(embed=embed)
+    except Exception as e:
+        await ctx.send(f"検索中にエラーが発生しました: {e}")
 
+# ---------- アライアンス検索 ----------
+@bot.command()
+async def ALLIANCE(ctx, *, keyword: str):
+    try:
+        alliance_sheet = sheet.worksheet("Alliance")
+        data = alliance_sheet.get_all_records()
+        results = [(row["名前"], row["URL"]) for row in data if keyword in row["名前"]]
+
+        if not results:
+            await ctx.send("該当するアライアンスレイドが見つかりませんでした。")
+            return
+
+        desc = "\n".join([f"[{name}]({url})" for name, url in results])
+        embed = disnake.Embed(
+            title=f"🔎 アライアンス検索結果（キーワード: {keyword}）",
+            description=desc,
+            color=disnake.Color.green()
+        )
+        await ctx.send(embed=embed)
+    except Exception as e:
+        await ctx.send(f"検索中にエラーが発生しました: {e}")
+
+# ---------- レイド検索 ----------
+@bot.command()
+async def RAID(ctx, *, keyword: str):
+    try:
+        raid_sheet = sheet.worksheet("Raid")
+        data = raid_sheet.get_all_records()
+        results = [(row["名前"], row["URL"]) for row in data if keyword in row["名前"]]
+
+        if not results:
+            await ctx.send("該当するレイドが見つかりませんでした。")
+            return
+
+        desc = "\n".join([f"[{name}]({url})" for name, url in results])
+        embed = disnake.Embed(
+            title=f"🔎 レイド検索結果（キーワード: {keyword}）",
+            description=desc,
+            color=disnake.Color.red()
+        )
+        await ctx.send(embed=embed)
     except Exception as e:
         await ctx.send(f"検索中にエラーが発生しました: {e}")
 
