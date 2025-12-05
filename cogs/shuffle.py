@@ -51,11 +51,12 @@ class Shuffle(commands.Cog):
         self,
         inter: disnake.ApplicationCommandInteraction,
         size: int,
+        members: str = commands.Param(description="メンバー一覧を入力（メンションを含めて）"),
         mode: Optional[str] = commands.Param(choices=["role"], default=None),
     ):
         await inter.response.defer()
 
-        raw_input = inter.options["members"]
+        raw_input = members  # ← inter.options["members"] ではなく引数で受け取る
         member_list = extract_members(raw_input, inter.guild)
         if not member_list:
             await inter.edit_original_response("有効なメンバーが見つかりませんでした。")
@@ -78,7 +79,9 @@ class Shuffle(commands.Cog):
             description=result_text,
             color=disnake.Color.blue(),
         )
-        embed.set_footer(text=f"Tank: {role_dist.get('Tank', 0)} / Healer: {role_dist.get('Healer', 0)} / DPS: {role_dist.get('DPS', 0)}")
+        embed.set_footer(
+            text=f"Tank: {role_dist.get('Tank', 0)} / Healer: {role_dist.get('Healer', 0)} / DPS: {role_dist.get('DPS', 0)}"
+        )
 
         await inter.edit_original_response(embed=embed)
 
