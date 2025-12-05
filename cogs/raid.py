@@ -5,6 +5,12 @@ from utils.sheets import get_records
 class Raid(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+    
+    # Help用の情報を持たせる
+    help_info = {
+        "command": "/raid",
+        "description": "ノーマルレイドを検索します"
+    }
 
     @commands.slash_command(description="レイド検索 🏰")
     async def raid(self, inter: disnake.ApplicationCommandInteraction, keyword: str):

@@ -6,6 +6,12 @@ class IDS(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    # Help用の情報を持たせる
+    help_info = {
+        "command": "/ids",
+        "description": "インスタンスダンジョンを検索しています"
+    }
+
     @commands.slash_command(description="FF14 ID検索 ⚔️")
     async def ids(self, inter: disnake.ApplicationCommandInteraction, keyword: str):
         data = get_records("FF14_dutyList", "ID")

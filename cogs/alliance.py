@@ -6,6 +6,12 @@ class Alliance(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    # Help用の情報を持たせる
+    help_info = {
+        "command": "/alliance",
+        "description": "アライアンスレイドを検索できます"
+    }
+
     @commands.slash_command(description="アライアンス検索 🛡️")
     async def alliance(self, inter: disnake.ApplicationCommandInteraction, keyword: str):
         data = get_records("FF14_dutyList", "Alliance")

@@ -5,6 +5,11 @@ from datetime import datetime, timezone
 class Images(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+    # Help用の情報を持たせる
+    help_info = {
+        "command": "/images",
+        "description": "指定した日付に近い画像を3件取得します。現在オプション作成中"
+    }
 
     @commands.slash_command(description="指定日付に近い画像を取得 🖼")
     async def images(self, inter: disnake.ApplicationCommandInteraction, date_str: str):
